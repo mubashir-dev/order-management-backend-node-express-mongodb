@@ -1,0 +1,316 @@
+{
+	"info": {
+		"_postman_id": "fa85ba07-a58e-4981-b575-5b00b6220332",
+		"name": "order-management-backend-nodejs-express-mongodb",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "SignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Sultan Khan",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "sultan-malik",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "repeat_password",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "Sultan@yahoo.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "zubair@dev.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "141414",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXV6YW1taWwgU2hhYmJpciIsImVtYWlsIjoiTXV6YW1taWwtZGV2QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiTXV6YW1taWwtZGV2Iiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwiaWF0IjoxNjMzNjMyMTY1LCJleHAiOjE2MzM2MzkzNjV9.ITvg3D4_kPqG77l4VlynOihgT3IUOdx38SkZvrGJciw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXV6YW1taWwgU2hhYmJpciIsImVtYWlsIjoiTXV6YW1taWwtZGV2QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiTXV6YW1taWwtZGV2Iiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwiaWF0IjoxNjMzNjMyMTY1LCJleHAiOjE2MzM2MzkzNjV9.ITvg3D4_kPqG77l4VlynOihgT3IUOdx38SkZvrGJciw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/615f3e9e972afd303c2348b7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"615f3e9e972afd303c2348b7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXV6YW1taWwgU2hhYmJpciIsImVtYWlsIjoiTXV6YW1taWwtZGV2QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiTXV6YW1taWwtZGV2Iiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwiaWF0IjoxNjMzNjM0ODA5LCJleHAiOjE2MzM2NDIwMDl9.7YlmezvjW6xywYtVg_ovfH8cWxXCrnlKD8CKhnYQP5w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Muhammad Zubair",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "muhammad-zuabir",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "zubair@dev.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXV6YW1taWwgU2hhYmJpciIsImVtYWlsIjoiTXV6YW1taWwtZGV2QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiTXV6YW1taWwtZGV2Iiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwiaWF0IjoxNjMzNjM0ODA5LCJleHAiOjE2MzM2NDIwMDl9.7YlmezvjW6xywYtVg_ovfH8cWxXCrnlKD8CKhnYQP5w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "password",
+									"value": "141414",
+									"type": "text"
+								},
+								{
+									"key": "repeat_password",
+									"value": "141414",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/auth/changePassword",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deactivate Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXV6YW1taWwgU2hhYmJpciIsImVtYWlsIjoiTXV6YW1taWwtZGV2QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiTXV6YW1taWwtZGV2Iiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwiaWF0IjoxNjMzNjM0ODA5LCJleHAiOjE2MzM2NDIwMDl9.7YlmezvjW6xywYtVg_ovfH8cWxXCrnlKD8CKhnYQP5w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/deactivate/615f3eda972afd303c2348bc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"deactivate",
+								"615f3eda972afd303c2348bc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Acctivate Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXV6YW1taWwgU2hhYmJpciIsImVtYWlsIjoiTXV6YW1taWwtZGV2QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoiTXV6YW1taWwtZGV2Iiwicm9sZSI6ImFkbWluIiwic3RhdHVzIjoiQWN0aXZlIiwiaWF0IjoxNjMzNjM0ODA5LCJleHAiOjE2MzM2NDIwMDl9.7YlmezvjW6xywYtVg_ovfH8cWxXCrnlKD8CKhnYQP5w",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/auth/activate/615f3eda972afd303c2348bc",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"activate",
+								"615f3eda972afd303c2348bc"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
