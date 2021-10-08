@@ -11,7 +11,6 @@ app.use(express.urlencoded({
     extended: true
 }))
 
-
 //Uploads Directory
 app.use("/public", express.static(path.join(__dirname, 'public/uploads')));
 
@@ -20,8 +19,11 @@ const mongo_connection = require(path.join(__dirname, 'config', 'db'))
 
 //requiring routes
 const UserRoute = require(path.join(__dirname, 'routes', 'auth.route'))
+const ProductCategoryRoute = require(path.join(__dirname, 'routes', 'category.route'))
 //Routing
 app.use('/auth', UserRoute)
+app.use('/category', ProductCategoryRoute)
+
 // 404 Handling
 app.use((req, res, next) => {
 
