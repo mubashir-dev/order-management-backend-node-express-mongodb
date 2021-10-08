@@ -74,7 +74,7 @@ exports.addProfileImage = [
                 }
                 const userExist = await User.findOne({_id: user._id})
                 if (userExist) {
-                    const result = await userExist.update({image: '/public/uploads/users/' + req.file.filename});
+                    const result = await userExist.update({image: '/users/' + req.file.filename});
                     res.status(200).send({
                         user: result,
                         message: "User Profile Image has been Added"
@@ -124,6 +124,7 @@ exports.login = async (req, res, next) => {
                         email: foundUser.email,
                         username: foundUser.username,
                         role: foundUser.role,
+                        image: req.get('Host')+foundUser.image ?? null,
                         status: foundUser.status == 1 ? "Active" : "Suspend",
                     };
                     //Prepare JWT token for authentication
