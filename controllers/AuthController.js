@@ -4,19 +4,20 @@ const {
     validationResult
 } = require("express-validator");
 const User = require("../models/user.model");
-const mongoose = require("mongoose");
+const ObjectId = require('mongoose').Types.ObjectId;
 const httpError = require("http-errors");
 const passwordHash = require("../helpers/password.hash");
 const jwt = require("jsonwebtoken");
 const auth = require("../middlewares/jwt.auth");
 const userData = require("../helpers/user");
-const { authRegisterSchema, LoginSchema, authEditSchema, ChangePasswordSchema } = require('../validations/auth.validate')
+const {authRegisterSchema, LoginSchema, authEditSchema, ChangePasswordSchema} = require('../validations/auth.validate')
 const _ = require('underscore');
+const {UserUpload} = require('../config/storage');
 
 //register user
 exports.register = async (req, res, next) => {
     try {
-        const validationResult = authRegisterSchema.validate(req.body, { abortEarly: false });
+        const validationResult = authRegisterSchema.validate(req.body, {abortEarly: false});
         if (!_.isEmpty(validationResult.error)) {
             let _errors = [];
             validationResult.error.details.forEach((element) => {
@@ -25,10 +26,9 @@ exports.register = async (req, res, next) => {
             res.status(422).send({
                 errors: _errors
             });
-        }
-        else {
-            const emailExist = await User.findOne({ email: req.body.email })
-            const usernameExist = await User.findOne({ username: req.body.username })
+        } else {
+            const emailExist = await User.findOne({email: req.body.email})
+            const usernameExist = await User.findOne({username: req.body.username})
             if (emailExist)
                 next(new httpError(422, {
                     message: `This ${req.body.email} email is already been registered`
@@ -56,11 +56,47 @@ exports.register = async (req, res, next) => {
         }));
     }
 }
+//register user
+exports.addProfileImage = [
+    auth,
+    async (req, res, next) => {
+        try {
+            if (!req.file) {
+                next(new httpError(422, {
+                    message: "Select Profile Image"
+                }));
+            } else {
+                const user = userData.user(req.headers.authorization);
+                try {
+                    UserUpload.single('image')
+                } catch (err) {
+                    console.log("Error has occurred while uploading Profile Image");
+                }
+                const userExist = await User.findOne({_id: user._id})
+                if (userExist) {
+                    const result = await userExist.update({image: '/public/uploads/users/' + req.file.filename});
+                    res.status(200).send({
+                        user: result,
+                        message: "User Profile Image has been Added"
+                    });
+                } else {
+                    res.status(404).send({
+                        message: "User has not found"
+                    });
+                }
+            }
 
+        } catch (error) {
+            next(new httpError(500, {
+                message: error.message
+            }));
+        }
+    }
+]
 //login
 exports.login = async (req, res, next) => {
     try {
-        const validationResult = LoginSchema.validate(req.body, { abortEarly: false });
+        const validationResult = LoginSchema.validate(req.body, {abortEarly: false});
         if (!_.isEmpty(validationResult.error)) {
             let _errors = [];
             validationResult.error.details.forEach((element) => {
@@ -116,7 +152,6 @@ exports.login = async (req, res, next) => {
         }));
     }
 }
-
 //get all users,this is only for admin
 exports.index = [auth,
     async (req, res, next) => {
@@ -126,7 +161,7 @@ exports.index = [auth,
                 const result = await User.aggregate()
                     .match({
                         status: "1",
-                        _id: { $ne: user._id }
+                        _id: {$ne: user._id}
                     })
                     .project({
                         "_id": 1,
@@ -153,7 +188,6 @@ exports.index = [auth,
         }
     }
 ];
-
 //get single user,this is only for admin
 exports.find = [auth,
     async (req, res, next) => {
@@ -191,11 +225,10 @@ exports.find = [auth,
         }
     }
 ];
-
 exports.update = [auth,
     async (req, res, next) => {
         try {
-            const validationResult = authEditSchema.validate(req.body, { abortEarly: false });
+            const validationResult = authEditSchema.validate(req.body, {abortEarly: false});
             if (!_.isEmpty(validationResult.error)) {
                 let _errors = [];
                 validationResult.error.details.forEach((element) => {
@@ -228,7 +261,7 @@ exports.update = [auth,
 exports.changePassword = [auth,
     async (req, res, next) => {
         try {
-            const validationResult = ChangePasswordSchema.validate(req.body, { abortEarly: false });
+            const validationResult = ChangePasswordSchema.validate(req.body, {abortEarly: false});
             if (!_.isEmpty(validationResult.error)) {
                 let _errors = [];
                 validationResult.error.details.forEach((element) => {
@@ -266,7 +299,6 @@ exports.changePassword = [auth,
         }
     }
 ];
-
 //Deactivate user
 exports.deactivate = [auth,
     async (req, res, next) => {
@@ -356,6 +388,4 @@ exports.activate = [auth,
     }
 ];
 //logout user
-exports.logout = [
-
-]
+exports.logout = []
