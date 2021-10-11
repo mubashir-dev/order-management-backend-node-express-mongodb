@@ -569,6 +569,176 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Product",
+			"item": [
+				{
+					"name": "Add Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXVoYW1tYWQgWnViYWlyIiwiZW1haWwiOiJ6dWJhaXJAZGV2LmNvbSIsInVzZXJuYW1lIjoibXVoYW1tYWQtenVhYmlyIiwicm9sZSI6ImFkbWluIiwiaW1hZ2UiOiJsb2NhbGhvc3Q6MzAwMC9wdWJsaWMvdXBsb2Fkcy91c2Vycy81NTdlNDQ5Zi02MjRhLTQ3ZjAtYTg1My1lNWE5MzdkNTZkMGYtLmpwZyIsInN0YXR1cyI6IkFjdGl2ZSIsImlhdCI6MTYzMzk2NTMzMiwiZXhwIjoxNjMzOTcyNTMyfQ.fnXe2D-RdX9Dm3D3lFL88kd9nopjC5gr4wPV3TXCUCY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Alpine Pen 2.07",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "250",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "74",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "616093df5a64c330c48df66e",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/C:/Users/dev/Desktop/pizza-images/1.jpg"
+								},
+								{
+									"key": "description",
+									"value": "Test Product dddddddddddddddddddddddddddddddddddddddddddd",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/product/add",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"product",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTVmM2U5ZTk3MmFmZDMwM2MyMzQ4YjciLCJuYW1lIjoiTXVoYW1tYWQgWnViYWlyIiwiZW1haWwiOiJ6dWJhaXJAZGV2LmNvbSIsInVzZXJuYW1lIjoibXVoYW1tYWQtenVhYmlyIiwicm9sZSI6ImFkbWluIiwiaW1hZ2UiOiJsb2NhbGhvc3Q6MzAwMC9wdWJsaWMvdXBsb2Fkcy91c2Vycy81NTdlNDQ5Zi02MjRhLTQ3ZjAtYTg1My1lNWE5MzdkNTZkMGYtLmpwZyIsInN0YXR1cyI6IkFjdGl2ZSIsImlhdCI6MTYzMzk2NTMzMiwiZXhwIjoxNjMzOTcyNTMyfQ.fnXe2D-RdX9Dm3D3lFL88kd9nopjC5gr4wPV3TXCUCY",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Alpine 2.8",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "285",
+									"type": "text"
+								},
+								{
+									"key": "quantity",
+									"value": "35",
+									"type": "text"
+								},
+								{
+									"key": "category",
+									"value": "616093df5a64c330c48df66e",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Test Product dddddddddddddddddddddddddddddddddddddddddddd",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:3000/product/edit/61646736fa8d1f50a411f541",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"product",
+								"edit",
+								"61646736fa8d1f50a411f541"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Product List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/product",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Product",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/product/61646736fa8d1f50a411f541",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"product",
+								"61646736fa8d1f50a411f541"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
