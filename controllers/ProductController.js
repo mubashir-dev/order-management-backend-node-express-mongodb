@@ -198,19 +198,41 @@ exports.index = [
 exports.find = [
     async (req, res, next) => {
         try {
-            const result = await Product.find({status: "1", _id: req.params.id});
-            // result.project({
-            //     "_id": 1,
-            //     "name": 1,
-            //     "quantity": 1,
-            //     "category": 1,
-            //     "image": {$concat: [req.get('Host'), "/public", '$image']},
-            //     "price": 1,
-            //     "description": 1,
-            //     "createdAt": 1,
-            //     "updatedAt": 1
-            //
-            // });
+            const result = await Product.aggregate([
+
+                {
+                    $match: {
+                        status: '1',
+                        _id: ObjectId(req.params.id)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "category",
+                        foreignField: "_id",
+                        as: "category"
+                    }
+                },
+                {
+                    $unwind: "$category"
+                },
+                {
+                    $project: {
+                        "_id": 1,
+                        "name": 1,
+                        "quantity": 1,
+                        "category.name": 1,
+                        "image": {$concat: [req.get('Host'), "/public", '$image']},
+                        "price": 1,
+                        "description": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
+                    }
+                }
+
+
+            ]);
             res.send({
                 product: result
             });
@@ -221,7 +243,8 @@ exports.find = [
             }));
         }
     }
-];
+]
+;
 //Deactivate Product product
 exports.deactivate = [auth,
     async (req, res, next) => {
