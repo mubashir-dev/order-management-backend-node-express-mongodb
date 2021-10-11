@@ -20,9 +20,11 @@ const mongo_connection = require(path.join(__dirname, 'config', 'db'))
 //requiring routes
 const UserRoute = require(path.join(__dirname, 'routes', 'auth.route'))
 const ProductCategoryRoute = require(path.join(__dirname, 'routes', 'category.route'))
+const ProductRoute = require(path.join(__dirname, 'routes', 'product.route'))
 //Routing
 app.use('/auth', UserRoute)
 app.use('/category', ProductCategoryRoute)
+app.use('/product', ProductRoute)
 
 // 404 Handling
 app.use((req, res, next) => {
