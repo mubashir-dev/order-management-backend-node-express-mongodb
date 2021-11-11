@@ -9,6 +9,7 @@ const userData = require("../helpers/user");
 const {productSchema} = require('../validations/product.validate')
 const _ = require('underscore');
 const {UserUpload, ProductUpload} = require("../config/storage");
+const {client} = require('../helpers/caching.redis');
 
 //create product
 exports.create = [auth,
@@ -167,23 +168,70 @@ exports.update = [auth,
 exports.index = [
     async (req, res, next) => {
         try {
-            const result = await Product.aggregate(
-            ).match({
-                status: "1"
-            }).project({
-                "_id": 1,
-                "name": 1,
-                "quantity": 1,
-                "category": 1,
-                "image": {$concat: [req.get('Host'), "/public", '$image']},
-                "price": 1,
-                "description": 1,
-                "createdAt": 1,
-                "updatedAt": 1
-
-            });
-            res.send({
-                products: result
+            client.get('products', async (error, response) => {
+                if (response) {
+                    let CacheTime = Date.now()
+                    res.send({
+                        medium:'Cache',
+                        count: JSON.parse(response).length,
+                        time_taken: Date.now() - CacheTime + " ms",
+                        products: JSON.parse(response)
+                    });
+                } else {
+                }
+                let CacheTime = Date.now()
+                const result = await Product.aggregate([
+                    {
+                        $match: {
+                            status: '1'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "categories",
+                            localField: "category",
+                            foreignField: "_id",
+                            as: "category"
+                        }
+                    },
+                    {
+                        $unwind: "$category"
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "user",
+                            foreignField: "_id",
+                            as: "user"
+                        }
+                    },
+                    {
+                        $unwind: "$user"
+                    },
+                    {
+                        $project: {
+                            "_id": 1,
+                            "name": 1,
+                            "quantity": 1,
+                            "category.name": 1,
+                            "user.name": 1,
+                            "image": {$concat: [req.get('Host'), "/public", '$image']},
+                            "price": 1,
+                            "description": 1,
+                            "createdAt": 1,
+                            "updatedAt": 1
+                        }
+                    }
+                ]).sort({
+                    "name": 1
+                });
+                client.set('products', JSON.stringify(result));
+                res.send({
+                    medium:'HTTP',
+                    count: result.length,
+                    time_taken: Date.now() - CacheTime + " ms",
+                    products: result
+                });
             });
         } catch
             (error) {
@@ -218,11 +266,23 @@ exports.find = [
                     $unwind: "$category"
                 },
                 {
+                    $lookup: {
+                        from: "users",
+                        localField: "user",
+                        foreignField: "_id",
+                        as: "user"
+                    }
+                },
+                {
+                    $unwind: "$user"
+                },
+                {
                     $project: {
                         "_id": 1,
                         "name": 1,
                         "quantity": 1,
                         "category.name": 1,
+                        "user.name": 1,
                         "image": {$concat: [req.get('Host'), "/public", '$image']},
                         "price": 1,
                         "description": 1,

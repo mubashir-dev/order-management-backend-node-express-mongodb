@@ -1,11 +1,15 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
 
-mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true, useFindAndModify: false}, (err) => {
+mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
+}, (err) => {
     if (!err) {
-        console.log('MongoDB Connection Succeeded.' + process.env.MONGO_DB)
+        console.log(`MONGODB CONNECTION HAS MADE :  ${process.env.MONGO_DB}`)
     } else {
-        console.log('Error in DB connection : ' + err.stack)
+        console.log(`DB CONNECTION HAS FAILED ${err.stack}`)
     }
 });
 
