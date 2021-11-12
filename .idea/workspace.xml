@@ -3,14 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e290bb52-7605-44ab-9380-194266a49a36" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/db.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/ProductCategoryController.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/ProductCategoryController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/ProductController.js" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/ProductController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mongo_migrations/migrations/20211110185707-product_categories.js" beforeDir="false" afterPath="$PROJECT_DIR$/mongo_migrations/migrations/20211110185707-product_categories.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mongo_migrations/migrations/20211110200004-product_migration.js" beforeDir="false" afterPath="$PROJECT_DIR$/mongo_migrations/migrations/20211110200004-product_migration.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +56,8 @@
       <workItem from="1636470926911" duration="5069000" />
       <workItem from="1636561767751" duration="13689000" />
       <workItem from="1636579041923" duration="1243000" />
-      <workItem from="1636656986997" duration="9835000" />
+      <workItem from="1636656986997" duration="10082000" />
+      <workItem from="1636726688537" duration="10233000" />
     </task>
     <servers />
   </component>
