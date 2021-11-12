@@ -126,7 +126,7 @@ exports.index = [
                             "createdAt": 1,
                             "updatedAt": 1
                         });
-                    client.setex('categories', 6000, JSON.stringify(result));
+                    client.set('categories', JSON.stringify(result));
                     res.send({
                         product_categories: result
                     });
