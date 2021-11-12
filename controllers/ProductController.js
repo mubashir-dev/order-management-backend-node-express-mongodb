@@ -197,6 +197,7 @@ exports.index = [
             const perPage = 10
             let page = req.query.page || 1;
             client.get('productss', async (error, response) => {
+            client.get('products', async (error, response) => {
                 if (response) {
                     let CacheTime = Date.now()
                     res.send({
@@ -276,6 +277,69 @@ exports.index = [
                         products: result
                     });
                 }
+            }
+                let CacheTime = Date.now()
+                const result = await Product.aggregate([
+                    {
+                        $match: {
+                            status: '1'
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "categories",
+                            localField: "category",
+                            foreignField: "_id",
+                            as: "category"
+                        }
+                    },
+                    {
+                        $unwind: "$category",
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "user",
+                            foreignField: "_id",
+                            as: "user"
+                        }
+                    },
+                    {
+                        $unwind: "$user"
+                    },
+                    {
+                        $addFields: {
+                            'category': "$category.name",
+                            'sell_by': "$user.name"
+                        }
+                    },
+                    {
+                        $project: {
+                            "_id": 1,
+                            "name": 1,
+                            "quantity": {$ifNull: ['$quantity', 0]},
+                            "category": 1,
+                            "sell_by": 1,
+                            "image": {$ifNull: [{$concat: [req.get('Host'), "/public", '$image']}, "N/A"]},
+                            "price": 1,
+                            "description": 1,
+                            "createdAt": 1,
+                            "updatedAt": 1
+                        }
+                    },
+                    {
+                        $sort: {
+                            createdAt: -1
+                        }
+                    }
+                ]);
+                client.set('products', JSON.stringify(result));
+                res.send({
+                    medium: 'HTTP',
+                    count: result.length,
+                    time_taken: Date.now() - CacheTime + " ms",
+                    products: result
+                });
             });
         } catch
             (error) {
@@ -368,6 +432,60 @@ exports.find = [
                         products: result
                     });
                 }
+            const result = await Product.aggregate([
+
+                {
+                    $match: {
+                        status: '1',
+                        _id: ObjectId(req.params.id)
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "categories",
+                        localField: "category",
+                        foreignField: "_id",
+                        as: "category"
+                    }
+                },
+                {
+                    $unwind: "$category"
+                },
+                {
+                    $lookup: {
+                        from: "users",
+                        localField: "user",
+                        foreignField: "_id",
+                        as: "user"
+                    }
+                },
+                {
+                    $unwind: "$user"
+                },
+                {
+                    $project: {
+                        "_id": 1,
+                        "name": 1,
+                        "quantity": 1,
+                        "category.name": 1,
+                        "user.name": 1,
+                        "image": {$concat: [req.get('Host'), "/public", '$image']},
+                        "price": 1,
+                        "description": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
+                    }
+                },
+                {
+                    $orderby: {
+                        'createdAt': 1
+                    }
+                }
+
+
+            ]);
+            res.send({
+                products: result
             });
         } catch
             (error) {
