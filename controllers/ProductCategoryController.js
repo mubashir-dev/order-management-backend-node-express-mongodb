@@ -7,6 +7,8 @@ const auth = require("../middlewares/jwt.auth");
 const userData = require("../helpers/user");
 const {categorySchema} = require('../validations/category.validate')
 const _ = require('underscore');
+const {client} = require('../helpers/caching.redis');
+const {response} = require("express");
 
 //create product category
 exports.create = [auth,
@@ -107,20 +109,29 @@ exports.update = [auth,
 exports.index = [
     async (req, res, next) => {
         try {
-            const result = await Category.aggregate()
-                .match({
-                    status: "1",
-                })
-                .project({
-                    "_id": 1,
-                    "name": 1,
-                    "description": 1,
-                    "createdAt": 1,
-                    "updatedAt": 1
-                });
-            res.send({
-                product_categories: result
-            });
+            client.get('categoriess', async (error, response) => {
+                if (response) {
+                    res.send({
+                        product_categories: JSON.parse(response)
+                    });
+                } else {
+                    const result = await Category.aggregate()
+                        .match({
+                            status: "1",
+                        })
+                        .project({
+                            "_id": 1,
+                            "name": 1,
+                            "description": 1,
+                            "createdAt": 1,
+                            "updatedAt": 1
+                        });
+                    client.setex('categories', 6000, JSON.stringify(result));
+                    res.send({
+                        product_categories: result
+                    });
+                }
+            })
         } catch (error) {
             next(new httpError(500, {
                 message: error.message
@@ -207,7 +218,8 @@ exports.activate = [auth,
             }));
         }
     }
-];//activate Product Category
+];
+//activate Product Category
 exports.delete = [auth,
     async (req, res, next) => {
         try {

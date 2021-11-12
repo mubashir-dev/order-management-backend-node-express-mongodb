@@ -49,5 +49,5 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(process.env.PORT, () => {
-    console.log(`Your Application is running on PORT ${process.env.PORT}`);
+    console.log(`Your Application is running on PORT ${process.env.PORT} and Application URL is 127.0.0.1:${process.env.PORT}`);
 })
