@@ -9,6 +9,7 @@ const userData = require("../helpers/user");
 const {productSchema} = require('../validations/product.validate')
 const _ = require('underscore');
 const {UserUpload, ProductUpload} = require("../config/storage");
+const {client} = require('../helpers/caching.redis');
 
 //create product
 exports.create = [auth,
@@ -53,7 +54,7 @@ exports.create = [auth,
                 } catch (err) {
                     console.log("Error has occurred while uploading Profile Image");
                 }
-                const category = new Product({
+                const product = new Product({
                     name: req.body.name,
                     description: req.body.description,
                     image: '/products/' + req.file.filename,
@@ -62,7 +63,23 @@ exports.create = [auth,
                     category: req.body.category,
                     user: user._id
                 })
-                const result = await category.save();
+                const result = await product.save();
+                //unsetting cache key
+                client.get('products', async (error, response) => {
+                    if (response) {
+                        client.del('products', (err, response) => {
+                            if (response == 1) {
+                                console.log('Cache has removed');
+                            } else {
+                                console.log('Cache has not removed');
+                            }
+                        });
+                        // console.log(typeof JSON.parse(response))
+                        // let data = JSON.parse(response);
+                        // data.unshift(result);
+                        // client.set('products', JSON.stringify(data));
+                    }
+                });
                 res.status(200).send({
                     message: "Product has been Created",
                     user: result
@@ -76,7 +93,6 @@ exports.create = [auth,
         }
     }
 ]
-
 //edit product
 exports.update = [auth,
     async (req, res, next) => {
@@ -135,7 +151,18 @@ exports.update = [auth,
                                 category: req.body.category,
                                 user: user._id
                             })
-
+                            //unsetting cache key
+                            client.get('products', async (error, response) => {
+                                if (response) {
+                                    client.del('products', (err, response) => {
+                                        if (response == 1) {
+                                            console.log('Cache has removed');
+                                        } else {
+                                            console.log('Cache has not removed');
+                                        }
+                                    });
+                                }
+                            });
                             if (updateProduct) {
                                 res.status(200).send({
                                     message: "Product has been Updated",
@@ -167,23 +194,88 @@ exports.update = [auth,
 exports.index = [
     async (req, res, next) => {
         try {
-            const result = await Product.aggregate(
-            ).match({
-                status: "1"
-            }).project({
-                "_id": 1,
-                "name": 1,
-                "quantity": 1,
-                "category": 1,
-                "image": {$concat: [req.get('Host'), "/public", '$image']},
-                "price": 1,
-                "description": 1,
-                "createdAt": 1,
-                "updatedAt": 1
+            const perPage = 10
+            let page = req.query.page || 1;
+            client.get('productss', async (error, response) => {
+                if (response) {
+                    let CacheTime = Date.now()
+                    res.send({
+                        medium: 'Cache',
+                        count: JSON.parse(response).length,
+                        time_taken: Date.now() - CacheTime + " ms",
+                        products: JSON.parse(response)
+                    });
+                } else {
+                    let CacheTime = Date.now()
+                    const result = await Product.aggregate([
+                        {
+                            $match: {
+                                status: '1'
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "categories",
+                                localField: "category",
+                                foreignField: "_id",
+                                as: "category"
+                            }
+                        },
+                        {
+                            $unwind: "$category",
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "user",
+                                foreignField: "_id",
+                                as: "user"
+                            }
+                        },
+                        {
+                            $unwind: "$user"
+                        },
+                        {
+                            $addFields: {
+                                'category': "$category.name",
+                                'sell_by': "$user.name"
+                            }
+                        },
+                        {
+                            $project: {
+                                "_id": 1,
+                                "name": 1,
+                                "quantity": {$ifNull: ['$quantity', 0]},
+                                "category": 1,
+                                "sell_by": 1,
+                                "image": {$ifNull: [{$concat: [req.get('Host'), "/public", '$image']}, "N/A"]},
+                                "price": 1,
+                                "description": 1,
+                                "createdAt": 1,
+                                "updatedAt": 1
+                            }
+                        },
+                        {
+                            $skip: perPage * page
+                        },
+                        {
+                            $limit: 10
+                        },
 
-            });
-            res.send({
-                products: result
+                        {
+                            $sort: {
+                                createdAt: -1
+                            }
+                        }
+                    ]);
+                    client.set('products', JSON.stringify(result));
+                    res.send({
+                        medium: 'HTTP',
+                        count: result.length,
+                        time_taken: Date.now() - CacheTime + " ms",
+                        products: result
+                    });
+                }
             });
         } catch
             (error) {
@@ -192,49 +284,90 @@ exports.index = [
             }));
         }
     }
-]
-;
+];
 //get single product
 exports.find = [
     async (req, res, next) => {
         try {
-            const result = await Product.aggregate([
-
-                {
-                    $match: {
-                        status: '1',
-                        _id: ObjectId(req.params.id)
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "categories",
-                        localField: "category",
-                        foreignField: "_id",
-                        as: "category"
-                    }
-                },
-                {
-                    $unwind: "$category"
-                },
-                {
-                    $project: {
-                        "_id": 1,
-                        "name": 1,
-                        "quantity": 1,
-                        "category.name": 1,
-                        "image": {$concat: [req.get('Host'), "/public", '$image']},
-                        "price": 1,
-                        "description": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                    }
+            client.get('products', async (error, response) => {
+                if (response) {
+                    let data = JSON.parse(response);
+                    const product = data.filter(function (element, index) {
+                        if (element._id == req.params.id) {
+                            return true;
+                        }
+                    });
+                    let CacheTime = Date.now()
+                    res.send({
+                        medium: 'Cache',
+                        count: 1,
+                        time_taken: Date.now() - CacheTime + " ms",
+                        product: product
+                    });
+                } else {
+                    let CacheTime = Date.now()
+                    const result = await Product.aggregate([
+                        {
+                            $match: {
+                                status: '1',
+                                _id: ObjectId(req.params.id)
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "categories",
+                                localField: "category",
+                                foreignField: "_id",
+                                as: "category"
+                            }
+                        },
+                        {
+                            $unwind: "$category",
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "user",
+                                foreignField: "_id",
+                                as: "user"
+                            }
+                        },
+                        {
+                            $unwind: "$user"
+                        },
+                        {
+                            $addFields: {
+                                'category': "$category.name",
+                                'sell_by': "$user.name"
+                            }
+                        },
+                        {
+                            $project: {
+                                "_id": 1,
+                                "name": 1,
+                                "quantity": {$ifNull: ['$quantity', 0]},
+                                "category": 1,
+                                "sell_by": 1,
+                                "image": {$ifNull: [{$concat: [req.get('Host'), "/public", '$image']}, "N/A"]},
+                                "price": 1,
+                                "description": 1,
+                                "createdAt": 1,
+                                "updatedAt": 1
+                            }
+                        },
+                        {
+                            $sort: {
+                                createdAt: -1
+                            }
+                        }
+                    ]);
+                    res.send({
+                        medium: 'HTTP',
+                        count: result.length,
+                        time_taken: Date.now() - CacheTime + " ms",
+                        products: result
+                    });
                 }
-
-
-            ]);
-            res.send({
-                product: result
             });
         } catch
             (error) {
@@ -243,8 +376,7 @@ exports.find = [
             }));
         }
     }
-]
-;
+];
 //Deactivate Product product
 exports.deactivate = [auth,
     async (req, res, next) => {
@@ -302,7 +434,8 @@ exports.activate = [auth,
             }));
         }
     }
-];//activate Product Category
+];
+//delete Product Category
 exports.delete = [auth,
     async (req, res, next) => {
         try {
@@ -312,13 +445,26 @@ exports.delete = [auth,
                     _id: req.params.id
                 });
                 if (result) {
+                    //removing deleted product from cache
+                    client.get('products', async (error, response) => {
+                        if (response) {
+                            let data = JSON.parse(response);
+                            data.forEach(function (element, index) {
+                                if (element._id == req.params.id) {
+                                    data.splice(index, 1);
+                                }
+                            });
+                            //setting data to redis cache
+                            client.set('products', JSON.stringify(data));
+                        }
+                    });
                     res.status(200).send({
-                        user: result,
+                        product: result,
                         message: "The Product  has been deleted"
                     });
                 } else {
                     res.status(409).send({
-                        user: result,
+                        product: result,
                         message: "The Product has not been deleted"
                     });
                 }
